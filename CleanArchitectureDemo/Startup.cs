@@ -10,6 +10,7 @@ using AspNetCoreRateLimit;
 
 public class Startup
 {
+    private string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
@@ -35,8 +36,8 @@ public class Startup
                 new RateLimitRule
                 {
                     Endpoint="*",
-                    Period="5s",
-                    Limit=2
+                    Period="1s",
+                    Limit=20
                 }
             };
         });
@@ -45,7 +46,20 @@ public class Startup
         services.AddSingleton<IRateLimitCounterStore,MemoryCacheRateLimitCounterStore>();
         services.AddSingleton<IRateLimitConfiguration,RateLimitConfiguration>();
         services.AddSingleton<IProcessingStrategy,AsyncKeyLockProcessingStrategy>();
-        services.AddInMemoryRateLimiting();
+        services.AddInMemoryRateLimiting();        
+
+        // Add CORS support
+        services.AddCors(options =>
+        {
+           options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy  =>
+                      {
+                          policy.WithOrigins("http://localhost:3000",
+                                              "http://www.contoso.com");
+                          policy.AllowAnyHeader();                    
+                          policy.AllowAnyMethod();
+                      });
+        });
 
         services.AddSwaggerGen(options =>
         {
@@ -162,6 +176,8 @@ public class Startup
         app.UseRouting();
         app.UseAuthentication();  
         app.UseAuthorization(); 
+
+        app.UseCors(MyAllowSpecificOrigins);
 
         app.UseEndpoints(endpoints =>
         {
