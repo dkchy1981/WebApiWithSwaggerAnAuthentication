@@ -60,8 +60,8 @@ namespace CleanArchitectureDemo.WebAPI.Controllers
                 if (string.IsNullOrEmpty(loginDTO.UserName) ||
                 string.IsNullOrEmpty(loginDTO.Password))
                     return BadRequest("Username and/or Password not specified");
-                if (loginDTO.UserName.Equals("string") &&
-                loginDTO.Password.Equals("string"))
+                if (loginDTO.UserName.Equals("test@yahoo.com") &&
+                loginDTO.Password.Equals("test"))
                 {    
                     /*        
                     //Create a List of Claims, Keep claims name short    
